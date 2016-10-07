@@ -2,42 +2,58 @@ import sys
 import os
 import filecmp
 
-list_files = []
 
-
-def input_name_dir():
+def input_dir_name():
     if len(sys.argv) == 1:
-        name_dir = input("Введите название директории  ")
+        dir_name = input("Введите название директории  ")
     else:
-        name_dir = sys.argv[1]
-    return name_dir
+        dir_name = sys.argv[1]
+    return dir_name
 
 
-def existence_dir(name_dir):
-    if os.path.exists(name_dir) and os.path.isdir(name_dir):
-        return 0
-    else:
-        return None
+def dir_exists(dir_name):
+    if os.path.exists(dir_name) and os.path.isdir(dir_name):
+        return True
 
 
-def list_files_in_dir(name_dir):
-    for rootdir, dirs, files in os.walk(name_dir):
+def create_list_files(dir_name):
+    list_files = []
+    for rootdir, dirs, files in os.walk(dir_name):
         for f in files:
             list_files.append(os.path.join(rootdir, f))
-    return 0
+    return list_files
 
 
-def search_duplicate():
+def search_duplicate(list_files):
     for file_path1 in list_files:
-            for file_path2 in list_files:
-                if file_path2 > file_path1:
-                    rez_delete = are_files_duplicates(file_path1, file_path2)
-                    if rez_delete == 1:
-                        break
-    return 0
+        for file_path2 in list_files:
+            if file_path2 > file_path1:
+                result_remove = are_files_duplicates(file_path1,
+                                                     file_path2,
+                                                     list_files)
+                if result_remove is True:
+                    break
 
 
-def delete_file(file_path):
+def are_files_duplicates(file_path1, file_path2, list_files):
+    if filecmp.cmp(file_path1, file_path2):
+        print("Файлы %(file1)s и %(file2)s совпадают." % {"file1": file_path1,
+                                                          "file2": file_path2})
+        return select_one_file(file_path1, file_path2, list_files)
+
+
+def select_one_file(file_path1, file_path2, list_files):
+    result_input = input("Какой удалить? 1 или 2? ")
+    if result_input == '1':
+        remove_file(file_path1, list_files)
+        return True
+    elif result_input == '2':
+        remove_file(file_path2, list_files)
+    else:
+        print("Файл не удалён, продолжаем")
+
+
+def remove_file(file_path, list_files):
     list_files.pop(list_files.index(file_path))
     os.remove(file_path)
     if os.path.exists(file_path):
@@ -46,27 +62,10 @@ def delete_file(file_path):
         print("Файл  " + str(file_path) + "  удалён")
 
 
-def are_files_duplicates(file_path1, file_path2):
-    if filecmp.cmp(file_path1, file_path2):
-        print("Файлы  " + str(file_path1) + "  и  " + str(file_path2) +
-              "  совпадают")
-        rez = input("Какой удалить? 1 или 2? ")
-        if rez == '1':
-            delete_file(file_path1)
-            return 1
-        elif rez == '2':
-            delete_file(file_path2)
-            return 2
-        else:
-            print("Файл не удалён, продолжаем")
-    return 0
-
-
 if __name__ == "__main__":
-    name_dir = input_name_dir()
-    if existence_dir(name_dir) is None:
+    dir_name = input_dir_name()
+    if dir_exists(dir_name) is None:
         print("Не найденно данного каталога")
     else:
-        list_files_in_dir(name_dir)
-        search_duplicate()
+        search_duplicate(create_list_files(dir_name))
         print("Порядок в файлах")

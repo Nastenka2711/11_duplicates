@@ -12,8 +12,7 @@ def input_dir_name():
 
 
 def dir_exists(dir_name):
-    if os.path.exists(dir_name) and os.path.isdir(dir_name):
-        return True
+    return os.path.exists(dir_name) and os.path.isdir(dir_name)
 
 
 def create_list_files(dir_name):
@@ -31,7 +30,7 @@ def search_duplicate(list_files):
                 result_remove = are_files_duplicates(file_path1,
                                                      file_path2,
                                                      list_files)
-                if result_remove is True:
+                if result_remove:
                     break
 
 
@@ -59,12 +58,12 @@ def remove_file(file_path, list_files):
     if os.path.exists(file_path):
         print("Ошибка при удалении файла")
     else:
-        print("Файл  " + str(file_path) + "  удалён")
+        print("Файл %(file)s удалён." % {"file": file_path})
 
 
 if __name__ == "__main__":
     dir_name = input_dir_name()
-    if dir_exists(dir_name) is None:
+    if not dir_exists(dir_name):
         print("Не найденно данного каталога")
     else:
         search_duplicate(create_list_files(dir_name))

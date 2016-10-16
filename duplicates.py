@@ -36,13 +36,13 @@ def search_duplicate(list_files):
 
 def are_files_duplicates(file_path1, file_path2, list_files):
     if filecmp.cmp(file_path1, file_path2):
-        print("Файлы %(file1)s и %(file2)s совпадают." % {"file1": file_path1,
-                                                          "file2": file_path2})
         return select_one_file(file_path1, file_path2, list_files)
 
 
 def select_one_file(file_path1, file_path2, list_files):
-    result_input = input("Какой удалить? 1 или 2? ")
+    result_input = input("Файлы:\n'%(file1)s'\n'%(file2)s'\nсовпали.\n \
+                          Какой удалить? 1 или 2?\n" % {"file1": file_path1,
+                                                        "file2": file_path2})
     if result_input == '1':
         remove_file(file_path1, list_files)
         return True
